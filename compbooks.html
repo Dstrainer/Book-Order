@@ -1,0 +1,235 @@
+<html>
+  <!-- compbooks.html
+       computer books order form, it has javascripts that will
+       compute the price of the books ordered, validate the 
+       quantity fields, validate that the name entered is all 
+       characters using pattern matching
+	   
+       it submits data to the compbooks_rec.php
+   -->
+  <head>
+   <title>compbooks order form</title>
+   <style type="text/css">
+    caption {border-style:solid;border-width:5px;
+             text-align:center; padding:10px;
+             font-size:larger;font-weight:bold;}
+    
+    
+    p     {font-size:larger;
+           font-weight:bold;}
+    textarea {padding:10px;
+              border-style:solid;
+              border-width:5px;
+              border-color:red;}
+    td.q   {text-align:center;}
+    td,th  {padding:10px;}
+    div  {text-align:center;}
+            
+
+   </style>
+   <script type="text/javascript">
+
+     
+    
+  var nam;
+    function calcprice()
+    {
+    
+     ordstr = "";
+     price =0;
+	 
+	 for(i = 0; i < 8; i++){
+	 if(i%2==0){
+		if(document.forms[0].elements[i].checked){
+		var quickFloat = document.forms[0].elements[i].value*document.forms[0].elements[i+1].value;
+           quickFloat = parseFloat(quickFloat);
+           price =price + quickFloat;
+ 
+          if(ordstr == ""){
+              ordstr = "" + document.forms[0].elements[i].name+" - "
+			  + document.forms[0].elements[i+1].value + "\n";
+           }
+           else{ ordstr = ordstr +"" 
+                 +document.forms[0].elements[i].name +" - "
+				 + document.forms[0].elements[i+1].value+ "\n";
+			}
+        }
+	}
+			}
+			
+     // calculates the price of the books ordered and outputs to the 
+     // textarea, uses quantity fields only if checkboxes are checked
+     validname = valname();
+     if (!validname)
+        { // name field isn't valid
+          return false;  // shut off the function and stop submission to server
+        }
+
+     // validate that for each checked check box, there is a valid quantity entered
+     // use valchk
+
+     validchk = valchk();
+     if (!validchk)
+       {
+         // not valid quan for each checked checkbox
+         return false;
+       }
+
+     
+      // find if each checkbox is checked
+      // if checked, then check to see if the quan
+      // text box is filled out correctly (only numbers)
+
+
+
+      // output books, quantity and total price to text area
+
+	 document.getElementById("txtout").value = "" + ordstr + "\n"
+					+ "Total price: $"+ price;
+
+    }
+
+    function valname()
+    {
+     // validates the name entered in the text area
+     // insures that the entry is all alphabetic characters (at least one)
+     // outputs an alert if the entry does not validate
+     
+     
+	nam= document.getElementById("fn").value
+	p= nam.search(/^[A-Za-z]+$/);
+	if(p == 0)
+	{
+     return true;
+	}
+	else{
+	window.alert("Invalid name entered");
+	return false;
+	}
+    }
+
+    function valformdata()
+    {
+     // this function runs after the submit button is clicked
+     // it validates the name data and that at least one
+     // check box is checked and that if a check box is checked
+     // a valid quantity has been entered in the associated quantity text field
+     // returns false and stops submission to the server script if there is 
+     // something wrong with the data
+
+     // validate that the name field has only alphabetic characters in it
+
+     
+     validname = valname();
+     if (!validname)
+        { // name field isn't valid
+          return false;  // shut off the function and stop submission to server
+        }
+
+     // validate that for each checked check box, there is a valid quantity entered
+     // use valchk
+     validchk = valchk();
+     if (!validchk)
+       {
+         // not valid quan for each checked checkbox
+         return false;
+       }
+
+     return true;
+
+
+    }
+
+      function valchk()
+    {
+	var number = /^[1-9]+$/;
+	for(i = 0; i < 8; i++){
+		if(document.forms[0].elements[i].checked){
+			if(document.forms[0].elements[i+1].value.search(number) == -1){
+			window.alert("No quantity given");
+			return false;
+			}
+			}
+			}
+			
+		
+     // validate that for each checked check box, there is a valid quantity
+     // if not, return false, if all quantities ok return true
+     return true; // this just here for testing initially
+
+
+	}
+
+
+  </script>
+ </head>
+ <body>
+   <div id="dentry">
+   <form method="post" action="./compbooks_rec.php" onsubmit="return valformdata()" >
+    <table border="border">
+     <caption>ITEC 225 Web Books Order App</caption>
+    <tr>
+     <th>Select the Books you want.</th>
+     <th>Select the Quantity.</th>
+    </tr>
+    <tr> 
+     <td><input type="checkbox" name="Javascript Made Simple" value="8.00" />
+         Javascript Made Simple ($8.00)</td>
+     <td class="q"><input type="text" name="jsquan" size="2" maxlength="2" /></td>
+    </tr>
+    <tr> 
+     <td><input type="checkbox" name="Perl for Beginners" value="12.00" />
+         Perl for Beginners ($12.00)</td>
+     <td class="q"><input type="text" name="perlquan" size="2" maxlength="2" /></td>
+    </tr>
+    <tr> 
+     <td><input type="checkbox" name="PHP Objects" value="3.00" />
+         PHP Objects ($3.00)</td>
+     <td class="q"><input type="text" name="phpquan" size="2" maxlength="2" /></td>
+    </tr>
+    <tr> 
+     <td><input type="checkbox" name="Inside DOM" value="11.00" />
+         Inside DOM ($11.00)</td>
+     <td class="q"><input type="text" name="domquan" size="2" maxlength="2" /></td>
+    </tr>
+    <tr>
+     <td>Please enter your first name</td>
+     <td class="q"><input type="text" name="fn" id="fn" size="12" maxlength="12" /></td>
+    </tr>
+    <tr>
+      <th>Calculate the Price and Display <br />
+          below. (Doesn't Order)
+      </th>
+      <th><input type="button" value="Calculate Price" onclick="calcprice()" />
+      </th>
+    </tr>
+    <tr>
+      <th>Reset the form</th>
+      <th><input type="reset" value="Clear Form" /></th>
+    </tr>
+    <tr>
+      <th>Order the books selected</th>
+      <th><input type="submit" value="Order Books" /></th>
+    </tr>
+   </table>
+  <p>
+    Order Information <br />
+    <textarea cols="60" rows="6" id="txtout" >
+    </textarea>
+  </p>
+ </form>
+</div>
+</body>
+</html> 
+
+
+
+
+
+
+
+
+
+
+
+    
